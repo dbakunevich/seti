@@ -5,11 +5,11 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 public class Client {
-    static String HOST = "192.168.1.130";
-//  static String FILE_NAME = "3.mp4";
-    static String FILE_NAME = "/home/dbakunevich/IdeaProjects/seti/sendFile/file";
+    static String HOST = "10.9.74.120";
+    static String FILE_NAME = "lab1.txt";
+    //static String FILE_NAME = "/home/dbakunevich/IdeaProjects/seti/sendFile/.idea/.gitignore";
     static String PATH_TO_STORAGE = "/home/dbakunevich/IdeaProjects/seti/sendFile/downloads/";
-    static String COMMAND = "send";
+    static String COMMAND = "receive";
     public static void main(String[] args) throws IOException {
         Socket socket;
 
