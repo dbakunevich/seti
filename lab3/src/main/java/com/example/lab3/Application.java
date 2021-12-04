@@ -2,6 +2,8 @@ package com.example.lab3;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -15,6 +17,9 @@ public class Application extends javafx.application.Application {
         stage.setTitle("App!");
         stage.setScene(scene);
         stage.setResizable(false);
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, (KeyEvent event) -> {
+            if (KeyCode.ESCAPE == event.getCode()) stage.close();
+        });
         stage.show();
     }
 

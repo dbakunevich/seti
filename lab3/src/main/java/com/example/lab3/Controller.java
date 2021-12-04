@@ -9,6 +9,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import javafx.util.Pair;
 
@@ -43,6 +45,7 @@ public class Controller {
 
     @FXML
     private void initialize() {
+        search.setDefaultButton(true);
         search.setOnAction(event -> {
             String getUserPlace = place.getText().trim();
             String output = getUrlContent("https://graphhopper.com/api/1/geocode?q=" + getUserPlace +
@@ -51,18 +54,17 @@ public class Controller {
             listPositions.getItems().clear();
             positions.clear();
 
-            if(!output.isEmpty()) {
+            if (!output.isEmpty()) {
                 JSONArray obj = new JSONArray(new JSONObject(output).getJSONArray("hits"));
-                for (var el: obj){
+                for (var el : obj) {
                     JSONObject curObj = new JSONObject(el.toString());
                     String pos = curObj.getString("name") + ", " + curObj.getString("country");
                     positions.put(pos, new Pair<>(curObj.getJSONObject("point").getDouble("lng"), curObj.getJSONObject("point").getDouble("lat")));
                 }
-                for (Map.Entry<String, Pair<Double, Double>> el: positions.entrySet()) {
+                for (Map.Entry<String, Pair<Double, Double>> el : positions.entrySet()) {
                     listPositions.getItems().add(el.getKey());
                 }
-            }
-            else {
+            } else {
                 listPositions.getItems().add("Ничего не найдено(");
             }
         });
@@ -77,8 +79,7 @@ public class Controller {
 
         if (cur == null || cur.isEmpty()) {
             listPlaces.getItems().add("Ничего не выбрано");
-        }
-        else {
+        } else {
             Pair<Double, Double> chords = positions.get(cur);
             String output = getUrlContent("https://api.opentripmap.com/0.1/ru/places/radius?radius=5000&lon=" + chords.getKey().toString() +
                     "&lat=" + chords.getValue().toString() +
@@ -87,8 +88,8 @@ public class Controller {
             placeChords.clear();
             placeDescription.clear();
             JSONArray obj;
-            if(!output.isEmpty() && (obj = new JSONArray(output)).length() != 0) {
-                for (var el: obj){
+            if (!output.isEmpty() && (obj = new JSONArray(output)).length() != 0) {
+                for (var el : obj) {
                     JSONObject curObj = new JSONObject(el.toString());
                     String name = curObj.getString("name");
                     if (name.equals(""))
@@ -98,11 +99,10 @@ public class Controller {
                     placeDescription.put(name, xid);
                     placeChords.put(name, chord);
                 }
-                for (Map.Entry<String, String> el: placeDescription.entrySet()) {
+                for (Map.Entry<String, String> el : placeDescription.entrySet()) {
                     listPlaces.getItems().add(el.getKey());
                 }
-            }
-            else {
+            } else {
                 listPlaces.getItems().add("Ничего не найдено(");
             }
         }
@@ -112,19 +112,34 @@ public class Controller {
     private void displayDescriptions() {
         String cur = listPlaces.getSelectionModel().getSelectedItem();
 
-        description.clear();
-        localTime.clear();
-        wheather.clear();
-        localTime.setText("Не могу найти");
-
         if (cur == null || cur.isEmpty()) {
+            description.clear();
+            localTime.clear();
+            wheather.clear();
             description.setText("Не могу найти");
             wheather.setText("Не могу найти");
+            localTime.setText("Не могу найти");
+            return;
         }
-        else {
-            Pair<Double, Double> chords = placeChords.get(cur);
+
+        CompletableFuture<Void> getDescription = CompletableFuture.runAsync(() -> {
+            description.clear();
+
             String outputDescription = getUrlContent("https://api.opentripmap.com/0.1/ru/places/xid/" + placeDescription.get(cur) +
                     "?apikey=5ae2e3f221c38a28845f05b61237c8a774ce9cbca2f9348768ce577d");
+            if (!outputDescription.isEmpty()) {
+                JSONObject obj = new JSONObject(outputDescription);
+                try {
+                    description.setText(obj.getJSONObject("info").getString("descr"));
+                } catch (Exception e) {
+                    description.setText("Не могу найти");
+                }
+            } else description.setText("Не могу найти");
+        });
+
+        CompletableFuture<Void> getWheather = CompletableFuture.runAsync(() -> {
+            wheather.clear();
+            Pair<Double, Double> chords = placeChords.get(cur);
 
             String outputWheather = getUrlContent("https://api.openweathermap.org/data/2.5/weather?lat=" + chords.getValue().toString() +
                     "&lon=" + chords.getKey().toString() +
@@ -134,19 +149,20 @@ public class Controller {
                 JSONObject obj = new JSONObject(outputWheather);
                 double temp = Math.round((obj.getJSONObject("main").getDouble("temp") - 273.15) * 100) / 100.0;
                 wheather.setText(temp + "`C");
-            }
-            else wheather.setText("Не могу найти");
+            } else wheather.setText("Не могу найти");
+        });
 
-            if (!outputDescription.isEmpty()){
-                JSONObject obj = new JSONObject(outputDescription);
-                try {
-                    description.setText(obj.getJSONObject("info").getString("descr"));
-                } catch (Exception e) {
-                    description.setText("Не могу найти");
-                }
-            }
-            else description.setText("Не могу найти");
+        CompletableFuture<Void> getLocalTime = CompletableFuture.runAsync(() -> {
+            localTime.clear();
+            localTime.setText("Не могу найти");
+        });
 
+        try {
+            getDescription.get();
+            getWheather.get();
+            getLocalTime.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
         }
     }
 

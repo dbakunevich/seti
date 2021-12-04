@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/FindMulticastCopies/FindMulticastCopies.iml" filepath="$PROJECT_DIR$/FindMulticastCopies/FindMulticastCopies.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sendFile/sendFile.iml" filepath="$PROJECT_DIR$/sendFile/sendFile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/seti.iml" filepath="$PROJECT_DIR$/.idea/seti.iml" />
+    </modules>
+  </component>
+</project>
