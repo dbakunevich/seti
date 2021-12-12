@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="600.0" prefWidth="960.0" style="-fx-background-color: silver;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.ooad.truckers.controller.MenuController">
+
+    <ImageView pickOnBounds="true" preserveRatio="true" x="309.0" y="-40.0">
+        <image>
+            <Image url="@/project/ooad/truckers/truck.png" />
+        </image>
+    </ImageView>
+
+    <ImageView fx:id="newGameButton" onMouseClicked="#newGameButtonPressed" pickOnBounds="true" preserveRatio="true" x="390.0" y="200.0">
+        <image>
+            <Image url="@/project/ooad/truckers/buttons/new_game.png" />
+        </image>
+    </ImageView>
+
+    <ImageView fx:id="connectButton" onMouseClicked="#connectButtonPressed" pickOnBounds="true" preserveRatio="true" x="405.0" y="275.0">
+        <image>
+            <Image url="@/project/ooad/truckers/buttons/connect.png" />
+        </image>
+    </ImageView>
+
+    <ImageView fx:id="optionsButton" onMouseClicked="#optionsButtonPressed" pickOnBounds="true" preserveRatio="true" x="410.0" y="354.0">
+        <image>
+            <Image url="@/project/ooad/truckers/buttons/options.png" />
+        </image>
+    </ImageView>
+
+    <ImageView fx:id="exitButton" onMouseClicked="#exitButtonPressed" pickOnBounds="true" preserveRatio="true" x="435.0" y="435.0">
+    <image>
+        <Image url="@/project/ooad/truckers/buttons/exit.png" />
+    </image>
+    </ImageView>
+</AnchorPane>
